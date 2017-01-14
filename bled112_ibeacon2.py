@@ -137,7 +137,7 @@ Scan request output example with public address 00:07:80:81:44:94 and RSSI -57:
     # actually parse all of the arguments
     options, arguments = p.parse_args()
 
-    # validate UUID if specified
+    # # validate UUID if specified
     # if len(options.uuid):
     #     if re.search('[^a-fA-F0-9:\\-]', options.uuid):
     #         p.print_help()
@@ -221,14 +221,14 @@ Scan request output example with public address 00:07:80:81:44:94 and RSSI -57:
     #     print "Scan requests:\t%s" % ['Disabled', 'Enabled'][options.scanreq]
     #     print "----------------------------------------------------------------"
 
-    # # open serial port for BGAPI access
-    # try:
-    #     ser = serial.Serial(port=options.port, baudrate=options.baud, timeout=1)
-    # except serial.SerialException as e:
-    #     print "\n================================================================"
-    #     print "Port error (name='%s', baud='%ld'): %s" % (options.port, options.baud, e)
-    #     print "================================================================"
-    #     exit(2)
+    # open serial port for BGAPI access
+    try:
+        ser = serial.Serial(port=options.port, baudrate=options.baud, timeout=1)
+    except serial.SerialException as e:
+        print "\n================================================================"
+        print "Port error (name='%s', baud='%ld'): %s" % (options.port, options.baud, e)
+        print "================================================================"
+        exit(2)
 
     # flush buffers
     #print "Flushing serial I/O buffers..."
