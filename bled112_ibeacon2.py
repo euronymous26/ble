@@ -86,67 +86,6 @@ class MyParser(optparse.OptionParser):
 def main():
     global options
 
-    # class IndentedHelpFormatterWithNL(optparse.IndentedHelpFormatter):
-    #   def format_description(self, description):
-    #     if not description: return ""
-    #     desc_width = self.width - self.current_indent
-    #     indent = " "*self.current_indent
-    #     bits = description.split('\n')
-    #     formatted_bits = [
-    #       optparse.textwrap.fill(bit,
-    #         desc_width,
-    #         initial_indent=indent,
-    #         subsequent_indent=indent)
-    #       for bit in bits]
-    #     result = "\n".join(formatted_bits) + "\n"
-    #     return result
-
-    #   def format_option(self, option):
-    #     result = []
-    #     opts = self.option_strings[option]
-    #     opt_width = self.help_position - self.current_indent - 2
-    #     if len(opts) > opt_width:
-    #       opts = "%*s%s\n" % (self.current_indent, "", opts)
-    #       indent_first = self.help_position
-    #     else: # start help on same line as opts
-    #       opts = "%*s%-*s  " % (self.current_indent, "", opt_width, opts)
-    #       indent_first = 0
-    #     result.append(opts)
-    #     if option.help:
-    #       help_text = self.expand_default(option)
-    #       help_lines = []
-    #       for para in help_text.split("\n"):
-    #         help_lines.extend(optparse.textwrap.wrap(para, self.help_width))
-    #       result.append("%*s%s\n" % (
-    #         indent_first, "", help_lines[0]))
-    #       result.extend(["%*s%s\n" % (self.help_position, "", line)
-    #         for line in help_lines[1:]])
-    #     elif opts[-1] != "\n":
-    #       result.append("\n")
-    #     return "".join(result)
-
-    # class MyParser(optparse.OptionParser):
-    #     def format_epilog(self, formatter=None):
-    #         return self.epilog
-
-    #     def format_option_help(self, formatter=None):
-    #         formatter = IndentedHelpFormatterWithNL()
-    #         if formatter is None:
-    #             formatter = self.formatter
-    #         formatter.store_option_strings(self)
-    #         result = []
-    #         result.append(formatter.format_heading(optparse._("Options")))
-    #         formatter.indent()
-    #         if self.option_list:
-    #             result.append(optparse.OptionContainer.format_option_help(self, formatter))
-    #             result.append("\n")
-    #         for group in self.option_groups:
-    #             result.append(group.format_help(formatter))
-    #             result.append("\n")
-    #         formatter.dedent()
-    #         # Drop the last "\n", or the header if no options or option groups:
-    #         return "".join(result[:-1])
-
     # process script arguments
     p = MyParser(description='Bluetooth Smart iBeacon script for Bluegiga BLED112 v2014-09-24', epilog=
 """
@@ -166,7 +105,7 @@ Scan request output example with public address 00:07:80:81:44:94 and RSSI -57:
     )
 
     # set all defaults for options
-    p.set_defaults(port="/dev/ttyACM0", baud=115200, interval=100, uuid="", major="0001", minor="0001", quiet=False, scanreq=False)
+    p.set_defaults(port="/dev/ttyACM0", baud=115200, interval=1000, uuid="", major="0001", minor="0001", quiet=False, scanreq=False)
 
     # create serial port options argument group
     group = optparse.OptionGroup(p, "Serial Port Options")
@@ -199,97 +138,97 @@ Scan request output example with public address 00:07:80:81:44:94 and RSSI -57:
     options, arguments = p.parse_args()
 
     # validate UUID if specified
-    if len(options.uuid):
-        if re.search('[^a-fA-F0-9:\\-]', options.uuid):
-            p.print_help()
-            print "\n================================================================"
-            print "Invalid UUID characters, must be 16 bytes in 0-padded hex form:"
-            print "\t-u 0123456789abcdef0123456789abcdef"
-            print "================================================================"
-            exit(1)
-        arg2 = options.uuid.replace(":", "").replace("-", "").upper()
-        if len(arg2) != 32:
-            p.print_help()
-            print "\n================================================================"
-            print "Invalid UUID length, must be 16 bytes in 0-padded hex form:"
-            print "\t-u 0123456789abcdef0123456789abcdef"
-            print "================================================================"
-            exit(1)
-        uuid = []
-        for i in range(0, len(arg2), 2):
-            uuid.append(int(arg2[i : i + 2], 16))
+    # if len(options.uuid):
+    #     if re.search('[^a-fA-F0-9:\\-]', options.uuid):
+    #         p.print_help()
+    #         print "\n================================================================"
+    #         print "Invalid UUID characters, must be 16 bytes in 0-padded hex form:"
+    #         print "\t-u 0123456789abcdef0123456789abcdef"
+    #         print "================================================================"
+    #         exit(1)
+    #     arg2 = options.uuid.replace(":", "").replace("-", "").upper()
+    #     if len(arg2) != 32:
+    #         p.print_help()
+    #         print "\n================================================================"
+    #         print "Invalid UUID length, must be 16 bytes in 0-padded hex form:"
+    #         print "\t-u 0123456789abcdef0123456789abcdef"
+    #         print "================================================================"
+    #         exit(1)
+    #     uuid = []
+    #     for i in range(0, len(arg2), 2):
+    #         uuid.append(int(arg2[i : i + 2], 16))
 
-    # validate major value if specified
-    if len(options.major):
-        if re.search('[^a-fA-F0-9:\\-]', options.major):
-            p.print_help()
-            print "\n================================================================"
-            print "Invalid major characters, must be 2 bytes in 0-padded hex form:"
-            print "\t-j 01cf"
-            print "================================================================"
-            exit(1)
-        arg2 = options.major.replace(":", "").replace("-", "").upper()
-        if len(arg2) != 4:
-            p.print_help()
-            print "\n================================================================"
-            print "Invalid major length, must be 2 bytes in 0-padded hex form:"
-            print "\t-j 01cf"
-            print "================================================================"
-            exit(1)
-        major = int(arg2[0:4], 16)
+    # # validate major value if specified
+    # if len(options.major):
+    #     if re.search('[^a-fA-F0-9:\\-]', options.major):
+    #         p.print_help()
+    #         print "\n================================================================"
+    #         print "Invalid major characters, must be 2 bytes in 0-padded hex form:"
+    #         print "\t-j 01cf"
+    #         print "================================================================"
+    #         exit(1)
+    #     arg2 = options.major.replace(":", "").replace("-", "").upper()
+    #     if len(arg2) != 4:
+    #         p.print_help()
+    #         print "\n================================================================"
+    #         print "Invalid major length, must be 2 bytes in 0-padded hex form:"
+    #         print "\t-j 01cf"
+    #         print "================================================================"
+    #         exit(1)
+    #     major = int(arg2[0:4], 16)
             
-    # validate minor value if specified
-    if len(options.minor):
-        if re.search('[^a-fA-F0-9:\\-]', options.minor):
-            p.print_help()
-            print "\n================================================================"
-            print "Invalid minor characters, must be 2 bytes in 0-padded hex form:"
-            print "\t-n 01cf"
-            print "================================================================"
-            exit(1)
-        arg2 = options.minor.replace(":", "").replace("-", "").upper()
-        if len(arg2) != 4:
-            p.print_help()
-            print "\n================================================================"
-            print "Invalid minor length, must be 2 bytes in 0-padded hex form:"
-            print "\t-n 01cf"
-            print "================================================================"
-            exit(1)
-        minor = int(arg2[0:4], 16)
+    # # validate minor value if specified
+    # if len(options.minor):
+    #     if re.search('[^a-fA-F0-9:\\-]', options.minor):
+    #         p.print_help()
+    #         print "\n================================================================"
+    #         print "Invalid minor characters, must be 2 bytes in 0-padded hex form:"
+    #         print "\t-n 01cf"
+    #         print "================================================================"
+    #         exit(1)
+    #     arg2 = options.minor.replace(":", "").replace("-", "").upper()
+    #     if len(arg2) != 4:
+    #         p.print_help()
+    #         print "\n================================================================"
+    #         print "Invalid minor length, must be 2 bytes in 0-padded hex form:"
+    #         print "\t-n 01cf"
+    #         print "================================================================"
+    #         exit(1)
+    #     minor = int(arg2[0:4], 16)
         
-    # validate interval
-    if options.interval < 30 or options.interval > 10230:
-        p.print_help()
-        print "\n================================================================"
-        print "Invalid advertisement interval, must be between 30 and 10230"
-        print "================================================================"
-        exit(1)
-    else:
-        adv_min = options.interval - 10
-        adv_max = adv_min + 20
+    # # validate interval
+    # if options.interval < 30 or options.interval > 10230:
+    #     p.print_help()
+    #     print "\n================================================================"
+    #     print "Invalid advertisement interval, must be between 30 and 10230"
+    #     print "================================================================"
+    #     exit(1)
+    # else:
+    #     adv_min = options.interval - 10
+    #     adv_max = adv_min + 20
             
-    # display  parameter summary, if not in quiet mode
-    if not(options.quiet):
-        print "================================================================"
-        print "BLED112 iBeacon for Python v%s" % __version__
-        print "================================================================"
-        print "Serial port:\t%s" % options.port
-        print "Baud rate:\t%s" % options.baud
-        print "Beacon UUID:\t%s" % ''.join(['%02X' % b for b in uuid])
-        print "Beacon Major:\t%04X" % major
-        print "Beacon Minor:\t%04X" % minor
-        print "Adv. interval:\t%d ms" % options.interval
-        print "Scan requests:\t%s" % ['Disabled', 'Enabled'][options.scanreq]
-        print "----------------------------------------------------------------"
+    # # display  parameter summary, if not in quiet mode
+    # if not(options.quiet):
+    #     print "================================================================"
+    #     print "BLED112 iBeacon for Python v%s" % __version__
+    #     print "================================================================"
+    #     print "Serial port:\t%s" % options.port
+    #     print "Baud rate:\t%s" % options.baud
+    #     print "Beacon UUID:\t%s" % ''.join(['%02X' % b for b in uuid])
+    #     print "Beacon Major:\t%04X" % major
+    #     print "Beacon Minor:\t%04X" % minor
+    #     print "Adv. interval:\t%d ms" % options.interval
+    #     print "Scan requests:\t%s" % ['Disabled', 'Enabled'][options.scanreq]
+    #     print "----------------------------------------------------------------"
 
-    # open serial port for BGAPI access
-    try:
-        ser = serial.Serial(port=options.port, baudrate=options.baud, timeout=1)
-    except serial.SerialException as e:
-        print "\n================================================================"
-        print "Port error (name='%s', baud='%ld'): %s" % (options.port, options.baud, e)
-        print "================================================================"
-        exit(2)
+    # # open serial port for BGAPI access
+    # try:
+    #     ser = serial.Serial(port=options.port, baudrate=options.baud, timeout=1)
+    # except serial.SerialException as e:
+    #     print "\n================================================================"
+    #     print "Port error (name='%s', baud='%ld'): %s" % (options.port, options.baud, e)
+    #     print "================================================================"
+    #     exit(2)
 
     # flush buffers
     #print "Flushing serial I/O buffers..."
