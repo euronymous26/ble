@@ -396,7 +396,7 @@ Scan request output example with public address 00:07:80:81:44:94 and RSSI -57:
     if options.scanreq:
         while (1):
             # catch all incoming data
-            while (ser.inWaiting()): bgapi_parse(ord(ser.read()));
+            while (ser.inWaiting()): bgapi_parse(ord(ser.read()));7
 
             # don't burden the CPU
             time.sleep(0.01)
